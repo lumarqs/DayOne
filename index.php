@@ -6,6 +6,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="intro">
+    
+<script>
+if (!localStorage.getItem('dayone_user')) {
+    window.location.href = 'login.php';
+}
+</script>
+
 
 <div class="intro-card">
     <div class="sun"></div>
@@ -18,6 +25,15 @@
         <a href="em-andamento.php" class="btn secondary">🚀 Já estou na empresa há alguns dias</a>
     </div>
 </div>
+<script>
+if (!localStorage.getItem('dayone_start')) {
+    localStorage.setItem('dayone_start', Date.now());
+}
+
+if (!localStorage.getItem('dayone_mode')) {
+    localStorage.setItem('dayone_mode', 'primeiro-dia');
+}
+</script>
 
 </body>
 </html>

@@ -211,3 +211,112 @@ button:hover {
     border: 2px solid #ff9f1c;
     color: #ff4b2b;
 }
+
+.guide {
+    padding-left: 18px;
+}
+
+.guide li {
+    font-size: 14px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+}
+
+
+
+/* COMUNIDADE - CONTROLE TOTAL */
+#community {
+    position: relative;
+}
+
+#community .community-group {
+    display: none !important;
+}
+
+#community .community-group.active {
+    display: block !important;
+    animation: fade 0.6s ease-in-out;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.grid-pessoas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 40px;
+    margin-top: 20px;
+}
+
+.pessoa {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.pessoa img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pessoa-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.pessoa-info strong {
+    font-size: 14px;
+}
+
+.pessoa-info span {
+    font-size: 13px;
+    opacity: 0.7;
+}
+body.login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff6a00, #fbc02d);
+}
+
+.login-card {
+    background: #fff;
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.login-card h2 {
+    margin-bottom: 8px;
+}
+
+.login-card p {
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 16px;
+}
+
+.login-card button {
+    width: 100%;
+}

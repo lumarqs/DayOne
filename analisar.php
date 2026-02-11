@@ -1,55 +1,82 @@
 <?php
+require 'config.php';
 
-$textoUsuario = strtolower($_POST["texto"] ?? "");
+$textoUsuario = $_POST['texto'] ?? '';
 
-if (
-    str_contains($textoUsuario, "erro") ||
-    str_contains($textoUsuario, "prazo") ||
-    str_contains($textoUsuario, "atraso")
-) {
-    $nivelRisco = "Alto";
-    $orientacao = "É importante comunicar seu líder o quanto antes. Transparência nos primeiros dias é fundamental.";
+if (empty($textoUsuario)) {
+    echo "Nenhum texto enviado.";
+    exit;
 }
-elseif (
-    str_contains($textoUsuario, "dúvida") ||
-    str_contains($textoUsuario, "não entendi") ||
-    str_contains($textoUsuario, "receio")
-) {
-    $nivelRisco = "Médio";
-    $orientacao = "Buscar ajuda é esperado no início. Perguntar evita retrabalho e demonstra interesse.";
-}
-elseif (
-    str_contains($textoUsuario, "arquivo") ||
-    str_contains($textoUsuario, "processo") ||
-    str_contains($textoUsuario, "procedimento")
-) {
-    $nivelRisco = "Baixo";
-    $orientacao = "Tente consultar a documentação interna ou colegas próximos antes de escalar.";
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . GEMINI_API_KEY;
+
+
+$dados = [
+    "contents" => [
+        [
+            "role" => "user",
+            "parts" => [
+                [
+                    "text" =>
+                    "Você é um mentor para estagiários em início de carreira. 
+                    Responda de forma acolhedora, clara e prática, sem termos complexos.
+                    
+                    Pergunta do estagiário:
+                    " . $textoUsuario
+                ]
+            ]
+        ]
+    ]
+];
+
+$ch = curl_init($url);
+
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => [
+        "Content-Type: application/json"
+    ],
+    CURLOPT_POSTFIELDS => json_encode($dados)
+]);
+
+$resposta = curl_exec($ch);
+
+if ($resposta === false) {
+    echo "Erro ao conectar com a IA.";
+    exit;
 }
 
-$respostaIA = "
-Nível de risco: $nivelRisco
+curl_close($ch);
 
-Orientação:
-$orientacao
-";
+
+
+$resultado = json_decode($resposta, true);
+
+$textoIA =
+    $resultado['candidates'][0]['content']['parts'][0]['text']
+    ?? "Não foi possível gerar uma resposta no momento.";
 
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>DayOne • Análise</title>
+    <title>Resposta da IA • DayOne</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
-    <h2>🤖 Análise do DayOne</h2>
-    <p><?= nl2br(htmlspecialchars($respostaIA)) ?></p>
-    <a href="index.php">Voltar</a>
-</div>
+<header class="header">
+    <h1>🤖 Resposta do DayOne</h1>
+</header>
+
+<main class="layout">
+    <section class="card">
+        <p><?= nl2br(htmlspecialchars($textoIA)) ?></p>
+        <br>
+        <a href="javascript:history.back()" class="btn secondary">← Voltar</a>
+    </section>
+</main>
 
 </body>
 </html>

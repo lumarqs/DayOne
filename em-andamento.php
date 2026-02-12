@@ -151,8 +151,136 @@ Quero mais orientação
 
     </div>
 </section>
+<section class="card">
+    <h3>📌 Meu Kanban</h3>
+
+    <div class="kanban-input">
+        <input id="novaTarefa" placeholder="Adicionar nova tarefa...">
+        <button onclick="adicionarTarefa()">Adicionar</button>
+    </div>
+</section>
+
+<!-- A FAZER -->
+<section class="card">
+    <h3>📝 A Fazer</h3>
+    <div class="coluna" data-status="todo"></div>
+</section>
+
+<!-- EM ANDAMENTO -->
+<section class="card">
+    <h3>🚧 Em Andamento</h3>
+    <div class="coluna" data-status="doing"></div>
+</section>
+
+<!-- REVISAR -->
+<section class="card">
+    <h3>🔍 Revisar</h3>
+    <div class="coluna" data-status="review"></div>
+</section>
+
+<!-- CONCLUÍDO -->
+<section class="card">
+    <h3>✅ Concluído</h3>
+    <div class="coluna" data-status="done"></div>
+</section>
+
 
 </main>
+<script>
+let tarefas = JSON.parse(localStorage.getItem("kanban")) || [];
+
+function salvar() {
+    localStorage.setItem("kanban", JSON.stringify(tarefas));
+}
+
+function render() {
+
+    document.querySelectorAll(".coluna").forEach(col => {
+        col.innerHTML = "";
+    });
+
+    tarefas.forEach((tarefa, index) => {
+
+        const card = document.createElement("div");
+        card.className = "tarefa-card";
+        card.draggable = true;
+        card.dataset.index = index;
+
+        const header = document.createElement("div");
+        header.className = "tarefa-header";
+
+        const titulo = document.createElement("h5");
+        titulo.textContent = tarefa.texto;
+
+        const btn = document.createElement("button");
+        btn.textContent = "✕";
+
+        // 🔥 excluir corretamente
+        btn.addEventListener("click", function(){
+            tarefas.splice(index, 1);
+            salvar();
+            render();
+        });
+
+        header.appendChild(titulo);
+        header.appendChild(btn);
+        card.appendChild(header);
+
+        const coluna = document.querySelector(`[data-status="${tarefa.status}"]`);
+        if (coluna) coluna.appendChild(card);
+    });
+}
+
+function adicionarTarefa() {
+    const input = document.getElementById("novaTarefa");
+
+    if (!input.value.trim()) return;
+
+    tarefas.push({
+        texto: input.value,
+        status: "todo"
+    });
+
+    input.value = "";
+    salvar();
+    render();
+}
+
+function remover(index) {
+    tarefas.splice(index, 1);
+    salvar();
+    render();
+}
+
+/* 🔥 DRAG GLOBAL (fora do render) */
+
+document.addEventListener("dragstart", function(e){
+    if(e.target.classList.contains("tarefa-card")){
+        e.dataTransfer.setData("index", e.target.dataset.index);
+    }
+});
+
+document.querySelectorAll(".coluna").forEach(col => {
+
+    col.addEventListener("dragover", function(e){
+        e.preventDefault();
+    });
+
+    col.addEventListener("drop", function(e){
+        e.preventDefault();
+        const index = e.dataTransfer.getData("index");
+
+        if(index !== ""){
+            tarefas[index].status = col.dataset.status;
+            salvar();
+            render();
+        }
+    });
+
+});
+
+render();
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
